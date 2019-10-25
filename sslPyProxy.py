@@ -1,6 +1,7 @@
 import requests
 import random
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 class Proxy:
     
@@ -54,7 +55,18 @@ class Proxy:
             del self.proxies[self.randomKey]
             self.randomKey = ''
         except:
-            return
+            return None
 
     def removeByKey(self, keyProxy):
         del self.proxies[keyProxy]
+
+    def removebyTimeout(self, url = 'http://icanhazip.com', timeOut):
+        data = self.proxies.copy()
+        for key, code in tqdm(data.items()):
+            try:
+                response = requests.get(url, proxies={"http": code[0]}, timeout=timeOut)
+            except:
+                try:
+                    del self.proxies[key]
+                except:
+                    continue
